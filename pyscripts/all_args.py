@@ -62,7 +62,7 @@ def run_shell_options():
     parser.add_argument('--stop_stage', default=4, type=int, help='')
 
     # output dir related
-    parser.add_argument('--out_dir',default="./Output", type=str, help='')
+    parser.add_argument('--out_dir',default="./Outputs", type=str, help='')
 
     # update model 
     all_args = model_config(parser)
