@@ -5,26 +5,5 @@
 ########################################################################
 
 # train + inference
-# python3 main.py --run_dataset darmanis-RawCount-new.csv
-
-# python3 main_raw.py --run_dataset TabulaMuris_Trachea_FACS-RowCount.csv
-# python3 main_cpm.py --run_dataset TabulaMuris_Trachea_FACS-RowCount.csv
-
-# python3 main_raw.py --run_dataset TabulaMuris_Tongue_FACS-RawCount-new.csv
-# python3 main_cpm.py --run_dataset TabulaMuris_Tongue_FACS-RawCount-new.csv
-
-
-# python3 main_raw.py --run_dataset darmanis-RawCount-new.csv
-# python3 main_cpm.py --run_dataset darmanis-RawCount-new.csv
-
-# python3 main_raw.py --run_dataset TabulaMuris_Heart_10X-RowCount.csv
-# python3 main_cpm.py --run_dataset TabulaMuris_Heart_10X-RowCount.csv
-
-python3 main_cpm.py --run_dataset TabulaMuris_Tongue_FACS-RawCount-new.csv
-python3 main_cpm.py --run_dataset TabulaMuris_Tongue_FACS-RawCount-new.csv
-python3 main_cpm.py --run_dataset darmanis-RawCount-new.csv
-python3 main_cpm.py --run_dataset darmanis-RawCount-new.csv
-python3 main_raw.py --run_dataset TabulaMuris_Heart_10X-RowCount.csv
-python3 main_cpm.py --run_dataset TabulaMuris_Heart_10X-RowCount.csv
-python3 main_raw.py --run_dataset TabulaMuris_Heart_10X-RowCount.csv
-python3 main_cpm.py --run_dataset TabulaMuris_Heart_10X-RowCount.csv
+python3 main_raw.py --run_dataset TabulaMuris_Trachea_FACS-RowCount.csv
+python3 main_cpm.py --run_dataset TabulaMuris_Trachea_FACS-RowCount.csv

@@ -18,10 +18,10 @@ The following command provides an example of training in the proposed method. Pl
 ```
 
 # Experiment and Results
-| Method              | # Params | results                                 |
-| ------------------- | -------- | ------------------------- | 
-|                     |          |                           |
-|          |          |                           |
+| Method              | # Params                  | results                   |
+| ------------------- | ------------------------- | ------------------------- | 
+|                     |                           |                           |
+|                     |                           |                           |
 
 
 # Citation

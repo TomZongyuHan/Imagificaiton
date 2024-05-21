@@ -1,97 +1,33 @@
+import os
+import cv2
+import sys
 import time
-import tensorflow as tf
-from tensorflow import keras
-from scipy.fft import fft
 import pandas as pd
-import csv
 import numpy as np
 from sklearn.model_selection import train_test_split
 from matplotlib import pyplot as plt
-import matplotlib.ticker as ticker
-import seaborn as sns
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import confusion_matrix
-# from sklearn.metrics import plot_confusion_matrix
-import re
-from tensorflow import keras
-# from tensorflow.keras.utils import to_categorical
-# from keras.utils import to_categorical
-from Transformer import ImageTransformer, LogScaler
-from sklearn.preprocessing import LabelEncoder
-from sklearn import svm
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.ensemble import RandomForestClassifier
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.models import Sequential
 from keras.layers.convolutional import Conv2D
 from keras.layers import Activation, Dense, MaxPooling2D, Flatten
-from sklearn.preprocessing import LabelEncoder
-import os
-from sklearn.svm import SVC
-from tqdm import tqdm
 from scipy.linalg import block_diag
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import f1_score
-from sklearn.metrics import recall_score
+from sklearn.metrics import accuracy_score, f1_score, recall_score
 import matplotlib.pyplot as plt  # matplotlib.pyplot is used for plotting a figure in the same way with matlab and making some change on it.
-
-plt.rcParams["font.family"] = "Times New Roman"  # rcpParams Tips for customizing the properties and default styles of Matplotlib.
-
 import warnings  # ''ignore'' means not important warning to stop the program. "never print matching warnings"
 
-warnings.filterwarnings("ignore")
-
-from all_args import run_shell_options
 from utils.utils import Logger
-import sys
+from pyscripts.b_fft import b_fft
+from pyscripts.all_args import run_shell_options
+from pyscripts.TroditionalClassifiers import classifiers
+from pyscripts.Transformer import ImageTransformer, LogScaler
 
-start_time = time.time()
+warnings.filterwarnings("ignore")
+plt.rcParams["font.family"] = "Times New Roman"  # rcpParams Tips for customizing the properties and default styles of Matplotlib.
 
+def main_func(args):
+    start_time = time.time()
 
-def b_fft(x, it):  # fast fourier transform
-    b = fft(x)  # If X is a matrix, then fft(X) treats the columns of X as vectors and returns the Fourier transform of each column.
-    b_real = b.real
-    b_real = np.where(b_real < 0, b_real, 0)
-
-    b_imag = b.imag
-    b_imag = np.where(b_imag < 0, b_imag, 0)
-
-    scale_fft = LogScaler()  # Log normalize and scale data
-    b_real_norm = scale_fft.fit_transform(np.abs(b_real + 1))
-    b_imag_norm = scale_fft.fit_transform(np.abs(b_imag + 1))
-
-    x_fft_real = it.transform(b_real_norm);
-    x_fft_imag = it.transform(b_imag_norm);
-
-    return x_fft_real, x_fft_imag
-
-def classifiers(x_train, x_test, train_label, test_label):
-    # SVM
-    svm_clf = svm.SVC()
-    svm_clf.fit(x_train, train_label)
-    svm_pred_label = svm_clf.predict(x_test)
-    svm_acc = accuracy_score(test_label, svm_pred_label)
-    svm_f1 = f1_score(test_label, svm_pred_label, average='micro')
-
-    # RF
-    rf_clf = RandomForestClassifier(max_depth=2, random_state=0)
-    rf_clf.fit(x_train, train_label)
-    rf_pred_label = rf_clf.predict(x_test)
-    rf_acc = accuracy_score(test_label, rf_pred_label)
-    rf_f1 = f1_score(test_label, rf_pred_label, average='micro')
-
-    #KNN
-    knn_cls = KNeighborsClassifier(n_neighbors=3)
-    knn_cls.fit(x_train, train_label)
-    knn_pred_label = knn_cls.predict(x_test)
-    knn_acc = accuracy_score(test_label, knn_pred_label)
-    knn_f1 = f1_score(test_label, knn_pred_label, average='micro')
-
-    return svm_acc, svm_f1, rf_acc, rf_f1, knn_acc, knn_f1
-
-
-def main_func():
-    args = run_shell_options()
     fileName = args.run_dataset
 
     # save Terminal outputs
@@ -104,10 +40,20 @@ def main_func():
     # record traceback error messages
     sys.stderr = Logger(log_file_name)
 
-
-    # Data clean
-    filepath = 'Datasets/RowCount/new/' + fileName if '-RawCount-new' in fileName else 'Datasets/RowCount/' + fileName
+    """
+    #################################### Stage 1 #####################################
+    Stage 1: Data preparation for data/${train_set}, data/${valid_set}, etc.
+    """
+    print("#################### Stage 1: Data preparation #####################")
+    
+    # Refer the data file path
+    data_root_dir = args.data_dir # default Datasets/
+    filepath = data_root_dir+'RowCount/new/'+fileName if '-RawCount-new' in fileName else data_root_dir+'RowCount/' + fileName
+    
+    # Read data
     Dataset = pd.read_csv(filepath, index_col=0, header=None, dtype='unicode').T
+    
+    # Data clean
     Dataset = Dataset.rename(columns={Dataset.columns[0]: 'Unnamed: 0'})
     Dataset.drop(columns=['Unnamed: 0'], inplace=True)  # omitting the first column consist of feature names
     if 'NA' in Dataset.columns: Dataset.drop(columns=['NA'], inplace=True)
@@ -118,24 +64,31 @@ def main_func():
         labels[i] = ''.join(labels[i].split('.'))
 
     data = Dataset.T.values  # Pandas DataFrame.values attribute return a Numpy representation of the given DataFrame.
-    # data = data.astype('int64')
-    data = data.astype('float64')
+    try:
+        data = data.astype('int64')
+    except:
+        data = data.astype('float64')
 
     print('len of unique classes: ' + str(len(list(set(labels)))))
     print('Input Type: ' + str(type(data[0][0])))
-
 
     # Train Test split
     classes, indices = np.unique(labels, return_inverse=True)
     X_Train, X_Test, y_train, y_test, train_label, test_label = train_test_split(
         data, labels, indices, test_size=0.2, random_state=23, stratify=labels)
 
+    print("Shape of X_train:{}".format(X_train.shape))
+    print("Shape of X_test:{}".format(X_test.shape))
+    print("Shape of y_train:{}".format(y_train.shape))
+    print("Shape of y_test:{}".format(y_test.shape))
 
+    # get results of traditional classification methods
     svm_acc, svm_f1, rf_acc, rf_f1, knn_acc, knn_f1 = classifiers(X_Train, X_Test, train_label, test_label)
     print("SVM Acc: {}, SVM F1: {}, RF Acc: {}, RF F1: {}, KNN Acc: {}, KNN F1: {}"
         .format(svm_acc, svm_f1, rf_acc, rf_f1, knn_acc, knn_f1))
 
-    ln = LogScaler()  # Log normalize and scale data
+    # Log normalize and scale data
+    ln = LogScaler()
     X_train = ln.fit_transform(X_Train)
     X_test = ln.transform(X_Test)
 
@@ -145,17 +98,20 @@ def main_func():
         train_frame = X_train[np.where(train_label == i)[0], :]
         train_frames.append(train_frame)
 
+    '''
+    #################################### Stage 2 #####################################
+    Stage 2: Apply Transformer and get fitters
+    '''
+    print("#################### Stage 2: Apply Transformer #####################")
+
     # Apply Transformer and get fitters
     fitters = []
     for i in range(len(classes)):
         it = ImageTransformer(feature_extractor='tsne',
                             pixels=100, random_state=12345,
                             n_jobs=-1)
-
         train_frame = np.array(train_frames[i])
-
         _ = it.fit(train_frame, plot=False)
-
         fitters.append(it)
 
     # Prepare training images
@@ -214,17 +170,10 @@ def main_func():
 
     X_train_imgs_cp = X_train_imgs
     X_test_imgs_cp = X_test_imgs
-    import cv2
 
+    # resize
     X_train_imgs_resize = []
     X_test_imgs_resize = []
-
-    # INTER_NEAREST - a nearest-neighbor interpolation
-    # INTER_LINEAR - a bilinear interpolation (used by default)
-    # INTER_AREA - resampling using pixel area relation. It may be a preferred method for image decimation, as it gives moire’-free results. But when the image is zoomed, it is similar to the INTER_NEAREST method.
-    # INTER_CUBIC - a bicubic interpolation over 4x4 pixel neighborhood
-    # INTER_LANCZOS4 - a Lanczos interpolation over 8x8 pixel neighborhood
-
     for i in range(len(X_train_imgs_cp)):
         X_train_imgs_resize.append(cv2.resize(X_train_imgs_cp[i], dsize=(200, 200), interpolation=cv2.INTER_LANCZOS4))
 
@@ -241,7 +190,27 @@ def main_func():
     resize_time = resiz_time - image_time
     print(' imgresize_run_time: ' + str(resize_time))
 
-    # CNN model
+    '''
+    #################################### Stage 3 #####################################
+    Stage 3: Train CNN Model
+    '''
+    print("#################### Stage 3: Training #####################")
+    
+    # get arguments
+    monitor = args.monitor
+    es_patience = args.es_patience
+    verbose = args.verbose
+    mode = args.mode
+    save_best_only = args.save_best_only
+    factor = args.factor
+    lr_patience = args.lr_patience
+    lr = args.lr
+    batch_size = args.batch_size
+    epochs = args.epochs
+    validation_split = args.validation_split
+    in_shape = X_train_imgs[0].shape
+
+    # Build CNN model
     model = Sequential()
     model.add(Conv2D(64, (3, 3), input_shape=X_train_imgs_resize[0].shape))
     model.add(Activation("relu"))
@@ -257,16 +226,22 @@ def main_func():
                 loss='sparse_categorical_crossentropy',
                 metrics=['accuracy'])
 
-    earlyStopping = EarlyStopping(monitor='val_loss', patience=10, verbose=1, mode='auto')
-    mcp_save = ModelCheckpoint('.mdl_wts.hdf5', save_best_only=True, monitor='val_loss', mode='auto')
-    reduce_lr_loss = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=8, verbose=1, min_delta=1e-4, mode='auto')
+    earlyStopping = EarlyStopping(monitor=monitor, patience=es_patience, verbose=verbose, mode=mode)
+    mcp_save = ModelCheckpoint('.mdl_wts.hdf5', save_best_only=save_best_only, monitor=monitor, mode=mode)
+    reduce_lr_loss = ReduceLROnPlateau(monitor=monitor, factor=factor, patience=lr_patience, verbose=verbose, min_delta=lr, mode=mode)
     # model.summary()
 
-    model.fit(X_train_imgs_resize, train_label, batch_size=32, epochs=90, verbose=1,
+    # start training
+    model.fit(X_train_imgs_resize, train_label, batch_size=batch_size, epochs=epochs, verbose=verbose,
             callbacks=[earlyStopping, mcp_save, reduce_lr_loss],
-            validation_split=0.2)
+            validation_split=validation_split)
 
-    # Evaluate
+    '''
+    #################################### Stage 4 #####################################
+    Stage 4: Evaluation
+    '''
+    print("#################### Stage 4: Evaluation #####################")
+    
     y_pred_0 = model.predict(X_test_imgs_resize)
     y_predict_label = np.argmax(y_pred_0, axis=1)
 
@@ -282,20 +257,19 @@ def main_func():
     tn, fp, fn, tp = confusion_matrix(y_predict_label, test_label, labels=[0, 1]).ravel()
     specificity = tp/(tn+fp)
 
-
-
     end_time = time.time()
     running_time = end_time - start_time
     cnn_time = end_time - resiz_time
 
-    print(fileName + ' Accuracy: ' + str(acc))
+    print(fileName + ' CNN Acc: ' + str(acc))
     print(fileName + ' specificity: ' + str(specificity))
     print(' run_time: ' + str(running_time))
     print(' cnn_run_time: ' + str(cnn_time))
 
-    print("f1_mac: {}, f1_mic: {}, f1_wght: {}".format(f1_mac, f1_mic, f1_wght))
-    print("sensitivity_mac: {}, sensitivity_mic: {}, sensitivity_wght: {}".format(sensitivity_mac, sensitivity_mic, sensitivity_wght))
+    print("CNN f1_mac: {}, CNN f1_mic: {}, CNN f1_wght: {}".format(f1_mac, f1_mic, f1_wght))
+    print("CNN sensitivity_mac: {}, CNN sensitivity_mic: {}, CNN sensitivity_wght: {}".format(sensitivity_mac, sensitivity_mic, sensitivity_wght))
 
 
 if __name__ == "__main__":
-    main_func()
+    args = run_shell_options()
+    main_func(args)
