@@ -22,13 +22,26 @@ The following command provides an example of training in the proposed method. Pl
 
 | Method                 | Raw          | CPM          |
 | ---------------------- | ------------ | ------------ |
-| Trachea_FACS                                         |
-| ---------------------- | ------------ | ------------ |
+| **darmanis**                                         |
+| RF                     |  0.628       |  0.649       |
+| KNN                    |  0.368       |  0.426       |
+| SVM                    |  0.479       |  0.351       |
+| Transformer+CNN(ours)  |  0.868       |  0.883       |
+| **Heart_10X**                                        |
+| RF                     |  0.784       |  0.824       |
+| KNN                    |  0.928       |  0.952       |
+| SVM                    |  0.928       |  0.968       |
+| Transformer+CNN(ours)  |  0.953       |  0.941       |
+| **Tongue_FACS**                                      |
+| RF                     |  0.857       |  0.867       |
+| KNN                    |  0.896       |  0.939       |
+| SVM                    |  0.892       |  0.921       |
+| Transformer+CNN(ours)  |  0.946       |  0.949       |
+| **Trachea_FACS**                                     |
 | RF                     |  0.900       |  0.900       |
 | KNN                    |  0.835       |  0.918       |
 | SVM                    |  0.876       |  0.912       |
 | Transformer+CNN(ours)  |  0.954       |  0.952       |
-
 
 # Citation
 Please use the following citation for this work:
