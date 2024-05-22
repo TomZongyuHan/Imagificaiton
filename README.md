@@ -20,13 +20,13 @@ The following command provides an example of training in the proposed method. Pl
 # Experiment and Results
 ![fig3](https://github.com/TomZongyuHan/Imagificaiton/assets/73565616/cc18fd8b-9c3e-44a4-9732-d5813bee6b61)
 
-| Method                 | Raw          | CPM          |
-| ---------------------- | ------------ | ------------ |
-| **darmanis**                                         || **Heart_10X**                                        |
-| RF                     |  0.628       |  0.649       || RF                     |  0.784       |  0.824       |
-| KNN                    |  0.368       |  0.426       || KNN                    |  0.928       |  0.952       |
-| SVM                    |  0.479       |  0.351       || SVM                    |  0.928       |  0.968       |
-| Transformer+CNN(ours)  |  0.868       |  0.883       || Transformer+CNN(ours)  |  0.953       |  0.941       |
+| Method                 | Raw          | CPM          | Method                 | Raw          | CPM          |
+| ---------------------- | ------------ | ------------ | ---------------------- | ------------ | ------------ |
+| **darmanis**                                         | **Heart_10X**                                        |
+| RF                     |  0.628       |  0.649       | RF                     |  0.784       |  0.824       |
+| KNN                    |  0.368       |  0.426       | KNN                    |  0.928       |  0.952       |
+| SVM                    |  0.479       |  0.351       | SVM                    |  0.928       |  0.968       |
+| Transformer+CNN(ours)  |  0.868       |  0.883       | Transformer+CNN(ours)  |  0.953       |  0.941       |
 
 
 
