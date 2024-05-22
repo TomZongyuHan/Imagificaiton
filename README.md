@@ -22,16 +22,16 @@ The following command provides an example of training in the proposed method. Pl
 
 | Method                 | Raw          | CPM          |
 | ---------------------- | ------------ | ------------ |
-| **darmanis**                                         |
-| RF                     |  0.628       |  0.649       |
-| KNN                    |  0.368       |  0.426       |
-| SVM                    |  0.479       |  0.351       |
-| Transformer+CNN(ours)  |  0.868       |  0.883       |
-| **Heart_10X**                                        |
-| RF                     |  0.784       |  0.824       |
-| KNN                    |  0.928       |  0.952       |
-| SVM                    |  0.928       |  0.968       |
-| Transformer+CNN(ours)  |  0.953       |  0.941       |
+| **darmanis**                                         || **Heart_10X**                                        |
+| RF                     |  0.628       |  0.649       || RF                     |  0.784       |  0.824       |
+| KNN                    |  0.368       |  0.426       || KNN                    |  0.928       |  0.952       |
+| SVM                    |  0.479       |  0.351       || SVM                    |  0.928       |  0.968       |
+| Transformer+CNN(ours)  |  0.868       |  0.883       || Transformer+CNN(ours)  |  0.953       |  0.941       |
+
+
+
+
+
 | **Tongue_FACS**                                      |
 | RF                     |  0.857       |  0.867       |
 | KNN                    |  0.896       |  0.939       |
