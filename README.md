@@ -20,12 +20,14 @@ The following command provides an example of training in the proposed method. Pl
 # Experiment and Results
 ![fig3](https://github.com/TomZongyuHan/Imagificaiton/assets/73565616/cc18fd8b-9c3e-44a4-9732-d5813bee6b61)
 
-| Method                 | # Raw                  | CPM                   |
-| ---------------------- | ------------------------- | ------------------------- | 
-| RF                     |                           |                           |
-| KNN                    |                           |                           |
-| SVM                    |                           |                           |
-| Transformer+CNN(ours)  |                           |                           |
+| Method                 | Raw          | CPM          |
+| ---------------------- | ------------ | ------------ |
+| Trachea_FACS                                         |
+| ---------------------- | ------------ | ------------ |
+| RF                     |  0.900       |  0.900       |
+| KNN                    |  0.835       |  0.918       |
+| SVM                    |  0.876       |  0.912       |
+| Transformer+CNN(ours)  |  0.954       |  0.952       |
 
 
 # Citation
